@@ -11,5 +11,6 @@ namespace WebAPI.Interfaces
         Task<IEnumerable<City>> GetCitiesAsync();
         void Add(City city);
         void Delete(int id);
+        Task<City> FindCity(int id);
     }
 }

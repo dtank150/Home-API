@@ -9,6 +9,11 @@ using WebAPI.Data;
 using WebAPI.Interfaces;
 using AutoMapper;
 using WebAPI.Helper;
+using System.Net;
+using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Http;
+using WebAPI.Extensions;
+using WebAPI.Middlewares;
 
 namespace WebAPI
 {
@@ -36,7 +41,7 @@ namespace WebAPI
             options.UseSqlServer(Configuration.GetConnectionString("HOME")));
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPI", Version = "v1" });
@@ -46,12 +51,9 @@ namespace WebAPI
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "WebAPI v1"));
-            }
+            app.ConfigureExceptionHandler(env);
+
+            app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseHttpsRedirection();
 
