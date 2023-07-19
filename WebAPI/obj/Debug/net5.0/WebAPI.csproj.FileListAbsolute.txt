@@ -69,3 +69,4 @@ C:\Home\WebAPI\WebAPI\bin\Debug\net5.0\System.Runtime.CompilerServices.Unsafe.dl
 C:\Home\WebAPI\WebAPI\bin\Debug\net5.0\Microsoft.AspNetCore.JsonPatch.dll
 C:\Home\WebAPI\WebAPI\bin\Debug\net5.0\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
 C:\Home\WebAPI\WebAPI\bin\Debug\net5.0\Newtonsoft.Json.Bson.dll
+C:\Home\WebAPI\WebAPI\bin\Debug\net5.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

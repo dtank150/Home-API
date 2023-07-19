@@ -14,6 +14,10 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using WebAPI.Extensions;
 using WebAPI.Middlewares;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System;
 
 namespace WebAPI
 {
@@ -41,6 +45,21 @@ namespace WebAPI
             options.UseSqlServer(Configuration.GetConnectionString("HOME")));
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            var secrectKey = Configuration.GetSection("AppSettings:Key").Value;
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secrectKey));
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(x =>
+            {
+                x.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = "localhost",
+                    ValidAudience = "localhost",
+                    IssuerSigningKey = key,
+                };
+            });
             services.AddControllers().AddNewtonsoftJson();
             services.AddSwaggerGen(c =>
             {
@@ -53,13 +72,15 @@ namespace WebAPI
         {
             app.ConfigureExceptionHandler(env);
 
-            app.UseMiddleware<ExceptionMiddleware>();
+            app.ConfigureBuiltinExceptionHandler(env);
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseCors("Allow");
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 
