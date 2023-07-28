@@ -10,6 +10,8 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using WebAPI.Dtos;
+using WebAPI.Errors;
+using WebAPI.Extensions;
 using WebAPI.Interfaces;
 using WebAPI.Models;
 
@@ -29,9 +31,17 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> Login(LoginDto ld)
         {
             var user = await uow.UserRepository.Authenticate(ld.Username, ld.Password);
-            if(user == null)
+           /* ApiError apiError = new ApiError();
+            if (user == null)
             {
-                return Unauthorized();
+                apiError.ErrorCode = Unauthorized().StatusCode;
+                apiError.ErrorMessage = "Inavalid Username or Password";
+                apiError.ErrorDetails = "This Error Appear When Provided Username or Password Does Not Exists";
+                return Unauthorized(apiError);
+            }*/
+            if (user == null)
+            {
+                return Unauthorized("Inavalid Username or Password");
             }
             var loginRes = new LoginResDto();
             loginRes.Username = user.Username;
@@ -41,8 +51,19 @@ namespace WebAPI.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> Register(LoginDto ld)
         {
+            /*ApiError apiError = new ApiError();
             if (await uow.UserRepository.UserAlredyExists(ld.Username))
-                return BadRequest("User Aleready Exists, Please Try Somthing Else");
+            {
+                apiError.ErrorCode = BadRequest().StatusCode;
+                apiError.ErrorMessage = "User Already Exists,Please Try Somthing Else";
+                return BadRequest(apiError);
+            }*/
+            if(ld.Username.ISEmpty() || ld.Password.ISEmpty())
+            {
+                return BadRequest("Username or Password can not be blank");
+            }
+            if (await uow.UserRepository.UserAlredyExists(ld.Username))
+                return BadRequest("User Aleready Exists, Please Try Somthing Else");    
             uow.UserRepository.Register(ld.Username, ld.Password);
             await uow.SaveAsync();
             return StatusCode(201);
@@ -61,7 +82,7 @@ namespace WebAPI.Controllers
             var tokenDecriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(10),
+                Expires = DateTime.UtcNow.AddMinutes(20),
                 SigningCredentials = Credential
             };
 

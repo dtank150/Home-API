@@ -64,12 +64,12 @@ namespace WebAPI.Controllers
             var city = mapper.Map<City>(cityDto);
             city.LastUpdatedBy = 1;
             city.LastUpdateOn = DateTime.Now;
-           /* var city = new City
-            {
-                Name = cityDto.Name,
-                LastUpdatedBy = 1,
-                LastUpdateOn = DateTime.Now
-            };*/
+            /* var city = new City
+             {
+                 Name = cityDto.Name,
+                 LastUpdatedBy = 1,
+                 LastUpdateOn = DateTime.Now
+             };*/
             uow.CityRepository.Add(city);
             await uow.SaveAsync();
             return StatusCode(201);

@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System;
+using WebAPI.Services;
 
 namespace WebAPI
 {
@@ -45,6 +46,7 @@ namespace WebAPI
             options.UseSqlServer(Configuration.GetConnectionString("HOME")));
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            /*services.AddScoped<IPhotoService, PhotoService>();*/
             var secrectKey = Configuration.GetSection("AppSettings:Key").Value;
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secrectKey));
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(x =>
